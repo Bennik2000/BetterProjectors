@@ -1,6 +1,6 @@
 /*
 Plugin Name
-Copyright (C) <Year> <Developer> <Email Address>
+Copyright (C) 2020 Bennik2000 bennik.ko@gmail.com
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,20 +16,15 @@ You should have received a copy of the GNU General Public License along
 with this program. If not, see <https://www.gnu.org/licenses/>
 */
 
-#include <obs-module.h>
+#include "projector-dock.hpp"
 
-#include "plugin-macros.generated.h"
-
-OBS_DECLARE_MODULE()
-OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
-
-bool obs_module_load(void)
+ProjectorDock::ProjectorDock(const obs_source_t *source)
+	: QDockWidget("Projector", static_cast<QWidget *>(obs_frontend_get_main_window())),
+	  source(source)
+	
 {
-    blog(LOG_INFO, "plugin loaded successfully (version %s)", PLUGIN_VERSION);
-    return true;
-}
+	setFeatures(QDockWidget::AllDockWidgetFeatures);
 
-void obs_module_unload()
-{
-    blog(LOG_INFO, "plugin unloaded");
+	setMinimumHeight(100);
+	setMinimumWidth(200);
 }
