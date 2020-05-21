@@ -19,23 +19,27 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #include "projector-dock.hpp"
 #include "projector-widget.hpp"
 #include <QGridLayout>
-#include <QLabel>
 
-ProjectorDock::ProjectorDock(obs_source_t *source)
-	: QDockWidget("Projector", static_cast<QWidget *>(obs_frontend_get_main_window()))
-	
+ProjectorDock::ProjectorDock(obs_source_t *source, int width, int height)
+	: QDockWidget("Projector",
+		      static_cast<QWidget *>(obs_frontend_get_main_window())),
+	  width(width),
+	  height(height)
 {
 	setFeatures(QDockWidget::AllDockWidgetFeatures);
+	setWindowFlags(windowFlags() & Qt::WindowMinMaxButtonsHint);
 
-	// TODO: When projector gets docked, Qt animates its size. This is a performance issue
-	// Maybe this: https://stackoverflow.com/questions/1445011/turn-off-opaque-resizing-of-qmainwindow-qdockwidget-separator
-	// 
-
-
-	auto widget = new ProjectorWidget(this, source);
-	//auto widget = new QLabel("test", this);
-
-
+	const auto widget = new ProjectorWidget(this, source);
 	setWidget(widget);
-	show();
+
+	const auto name = obs_source_get_name(source);
+	setWindowTitle(name);
+	
+
+	adjustSize();
+}
+
+QSize ProjectorDock::sizeHint() const
+{
+	return QSize(width, height);
 }

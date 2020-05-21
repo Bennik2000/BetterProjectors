@@ -18,12 +18,17 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #pragma once
 
 #include <QDockWidget>
-#include <string>
 #include <obs-frontend-api.h>
 #include <obs.h>
 
 class ProjectorDock : public QDockWidget {
 
+private:
+	int width;
+	int height;
+
 public:
-	ProjectorDock(obs_source_t *source);
+	ProjectorDock(obs_source_t *source, int width = 400, int height = 225);
+
+	QSize sizeHint() const override;
 };

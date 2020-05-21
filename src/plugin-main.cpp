@@ -23,31 +23,25 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 
 #include "projector-dock.hpp"
 
-//#include "plugin-macros.generated.h"
+#include "ui/window-add-projector.hpp"
 
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
 
 bool obs_module_load(void)
 {
-	QMainWindow *main_window =
-		(QMainWindow *)obs_frontend_get_main_window();
+	const QAction *action = static_cast<QAction *>(
+		obs_frontend_add_tools_menu_qaction("Projector"));
 
-	QAction *action = (QAction *)obs_frontend_add_tools_menu_qaction("Projector");
-	
-	//obs_frontend_push_ui_translation(obs_module_get_string);
-	//virtual_prop = new VirtualProperties(main_window);
-	//obs_frontend_pop_ui_translation();
+	const auto menu_cb = [] {
+		auto window = new AddProjectorWindow(
+			static_cast<QWidget *>(obs_frontend_get_main_window()));
 
-	auto menu_cb = [] {
-		obs_frontend_add_dock(
-			new ProjectorDock(obs_get_source_by_name("Szene")));
-
+		window->show();
 	};
 
 	action->connect(action, &QAction::triggered, menu_cb);
 
-	
 	return true;
 }
 

@@ -33,9 +33,16 @@ ProjectorWidget::ProjectorWidget(QWidget *parent, obs_source_t *source)
 		&ProjectorWidget::visibleChanged);
 	connect(windowHandle(), &QWindow::screenChanged, this,
 		&ProjectorWidget::screenChanged);
+
+	if (source)
+		obs_source_inc_showing(source);
 }
 
-ProjectorWidget::~ProjectorWidget() {}
+ProjectorWidget::~ProjectorWidget()
+{
+	if (source)
+		obs_source_dec_showing(source);
+}
 
 void ProjectorWidget::visibleChanged(bool visible)
 {
@@ -161,7 +168,7 @@ void ProjectorWidget::paintEvent(QPaintEvent *event)
 {
 	if (!display)
 		createDisplay();
-	
+
 	QWidget::paintEvent(event);
 }
 

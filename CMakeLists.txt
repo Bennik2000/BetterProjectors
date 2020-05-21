@@ -1,32 +1,48 @@
 project(better-projectors)
 
+if(WIN32)
+	set(MODULE_DESCRIPTION "Better projectors for OBS")
+endif()
+
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
+
+#set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
 
 if (NOT Qt5Widgets_FOUND OR NOT Qt5Core_FOUND)
     message(FATAL_ERROR "Failed to find Qt5")
 endif ()
+
+
+set(better-projectors_UI
+        src/ui/window-add-projector.ui)
+
+
+qt5_wrap_ui(better-projectors_UI_HEADERS ${better-projectors_UI})
+#qt5_add_resources(...)
+
 
 set(better-projectors_SOURCES 
 	src/plugin-main.cpp 
 	src/projector-dock.cpp
 	src/projector-dock.hpp
 	src/projector-widget.cpp
-	src/projector-widget.hpp)
+	src/projector-widget.hpp
+	src/ui/window-add-projector.cpp
+	src/ui/window-add-projector.hpp
+	${better-projectors_UI_HEADERS})
 
-if(WIN32)
-	set(MODULE_DESCRIPTION "Better projectors for OBS")
-	#configure_file(${CMAKE_SOURCE_DIR}/cmake/winrc/obs-module.rc.in obs-x264.rc)
-	#list(APPEND obs-x264_SOURCES
-	#	obs-x264.rc)
-endif()
-
-
-add_library(better-projectors MODULE ${better-projectors_SOURCES})
+add_library(better-projectors 
+	MODULE 
+	${better-projectors_SOURCES})
+	
+MESSAGE(${better-projectors_UI_HEADERS} " <-----")
 
 target_include_directories(better-projectors 
 	PRIVATE 
 	"../../UI/obs-frontend-api"
+	${CMAKE_CURRENT_BINARY_DIR}
     ${Qt5Widgets_INCLUDES}
 	${Qt5Core_INCLUDES})
 	
