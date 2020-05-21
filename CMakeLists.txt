@@ -10,7 +10,9 @@ endif ()
 set(better-projectors_SOURCES 
 	src/plugin-main.cpp 
 	src/projector-dock.cpp
-	src/projector-dock.hpp)
+	src/projector-dock.hpp
+	src/projector-widget.cpp
+	src/projector-widget.hpp)
 
 if(WIN32)
 	set(MODULE_DESCRIPTION "Better projectors for OBS")

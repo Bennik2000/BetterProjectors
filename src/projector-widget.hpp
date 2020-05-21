@@ -17,13 +17,35 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 */
 #pragma once
 
-#include <QDockWidget>
-#include <string>
-#include <obs-frontend-api.h>
+#include <QWidget>
+#include <QScreen>
 #include <obs.h>
+#include <obs.hpp>
 
-class ProjectorDock : public QDockWidget {
+class ProjectorWidget : public QWidget {
+
+private:
+	obs_source_t *source;
+	OBSDisplay display;
 
 public:
-	ProjectorDock(obs_source_t *source);
+	ProjectorWidget(QWidget *parent, obs_source_t *source);
+	~ProjectorWidget();
+
+	void resizeEvent(QResizeEvent *event) override;
+	void paintEvent(QPaintEvent *event) override;
+	QPaintEngine *paintEngine() const override;
+
+private slots:
+	void visibleChanged(bool visible);
+	void screenChanged(QScreen *);
+
+private:
+	void createDisplay();
+	void updateSize();
+
+	void renderCallback(uint32_t cx, uint32_t cy);
+	
+	static void qTToGSWindow(WId windowId, gs_window &gsWindow);
+	static QSize getWidgetPixelSize(QWidget *widget);
 };

@@ -1,5 +1,5 @@
 /*
-Plugin Name
+Better Projectors
 Copyright (C) 2020 Bennik2000 bennik.ko@gmail.com
 
 This program is free software; you can redistribute it and/or modify
@@ -17,14 +17,25 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 */
 
 #include "projector-dock.hpp"
+#include "projector-widget.hpp"
+#include <QGridLayout>
+#include <QLabel>
 
-ProjectorDock::ProjectorDock(const obs_source_t *source)
-	: QDockWidget("Projector", static_cast<QWidget *>(obs_frontend_get_main_window())),
-	  source(source)
+ProjectorDock::ProjectorDock(obs_source_t *source)
+	: QDockWidget("Projector", static_cast<QWidget *>(obs_frontend_get_main_window()))
 	
 {
 	setFeatures(QDockWidget::AllDockWidgetFeatures);
 
-	setMinimumHeight(100);
-	setMinimumWidth(200);
+	// TODO: When projector gets docked, Qt animates its size. This is a performance issue
+	// Maybe this: https://stackoverflow.com/questions/1445011/turn-off-opaque-resizing-of-qmainwindow-qdockwidget-separator
+	// 
+
+
+	auto widget = new ProjectorWidget(this, source);
+	//auto widget = new QLabel("test", this);
+
+
+	setWidget(widget);
+	show();
 }
