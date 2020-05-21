@@ -4,11 +4,14 @@
 #include <QDialog>
 #include "ui_window-add-projector.h"
 
+class BetterProjectors;
+
 class AddProjectorWindow : public QDialog {
-	
+private:
+	BetterProjectors *instance;
 
 public:
-	explicit AddProjectorWindow(QWidget *parent = nullptr);
+	AddProjectorWindow(BetterProjectors *instance, QWidget *parent);
 
 	std::unique_ptr<Ui::AddProjectorWindow> ui;
 

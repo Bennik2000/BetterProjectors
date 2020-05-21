@@ -1,9 +1,11 @@
 #include <obs-frontend-api.h>
 #include "window-add-projector.hpp"
 #include "../projector-dock.hpp"
+#include "../better-projectors.hpp"
 
-AddProjectorWindow::AddProjectorWindow(QWidget *parent)
-	: QDialog(parent), ui(new Ui::AddProjectorWindow)
+AddProjectorWindow::AddProjectorWindow(BetterProjectors *instance,
+				       QWidget *parent)
+	: QDialog(parent), ui(new Ui::AddProjectorWindow), instance(instance)
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -39,21 +41,10 @@ void AddProjectorWindow::radioButtonSourceToggled(bool checked)
 void AddProjectorWindow::onOkClicked(bool checked)
 {
 	if (ui->listWidget->selectedItems().size() == 1) {
-		const auto source = obs_get_source_by_name(
-			ui->listWidget->selectedItems()[0]
-				->text()
-				.toLocal8Bit()
-				.data());
-
-		const float width = 400;
-		const float height = width * (9.0f / 16.0f);
-
-		auto projector = new ProjectorDock(source, width, height);
-
-		projector->show();
-		projector->setFloating(true);
-
-		obs_frontend_add_dock(projector);
+		instance->showProjector(ui->listWidget->selectedItems()[0]
+						->text()
+						.toLocal8Bit()
+						.data());
 	}
 
 	close();

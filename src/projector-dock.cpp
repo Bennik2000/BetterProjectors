@@ -24,7 +24,8 @@ ProjectorDock::ProjectorDock(obs_source_t *source, int width, int height)
 	: QDockWidget("Projector",
 		      static_cast<QWidget *>(obs_frontend_get_main_window())),
 	  width(width),
-	  height(height)
+	  height(height),
+	  source(source)
 {
 	setFeatures(QDockWidget::AllDockWidgetFeatures);
 	setWindowFlags(windowFlags() & Qt::WindowMinMaxButtonsHint);
@@ -32,10 +33,10 @@ ProjectorDock::ProjectorDock(obs_source_t *source, int width, int height)
 	const auto widget = new ProjectorWidget(this, source);
 	setWidget(widget);
 
-	const auto name = obs_source_get_name(source);
-	setWindowTitle(name);
-	
+	auto name = obs_source_get_name(source);
 
+	setWindowTitle(name);
+	setObjectName("BK_Projector-" + QString(name));
 	adjustSize();
 }
 

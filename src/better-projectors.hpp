@@ -15,33 +15,28 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program. If not, see <https://www.gnu.org/licenses/>
 */
-
-#include <obs-module.h>
-#include <obs-frontend-api.h>
-#include <QApplication>
-#include <QAction>
-
+#pragma once
+#include <vector>
 #include "projector-dock.hpp"
-#include "better-projectors.hpp"
-#include "ui/window-add-projector.hpp"
 
-OBS_DECLARE_MODULE()
-OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
+class BetterProjectors {
 
-BetterProjectors *pluginInstance;
+public:
+	std::vector<ProjectorDock *> docks;
 
-bool obs_module_load(void)
-{
-	pluginInstance = new BetterProjectors();
+public:
+	BetterProjectors();
+	~BetterProjectors();
 
-	blog(LOG_INFO, "Better projectors loaded");
-	
-	return true;
-}
+	void showProjector(const char *name, const char *dockId = "");
 
-void obs_module_unload()
-{
-	delete pluginInstance;
+private:
+	void initialize();
+	void registerToolsAction();
+	void registerSaveCallback();
+	static void saveCallback(obs_data_t *save_data, bool saving,
+				 void *data);
 
-	blog(LOG_INFO, "Better projectors unloaded");
-}
+	static void save(obs_data_t *save_data, BetterProjectors *instance);
+	static void load(obs_data_t *save_data, BetterProjectors *instance);
+};
