@@ -28,7 +28,8 @@ public:
 	BetterProjectors();
 	~BetterProjectors();
 
-	void showProjector(const char *name, const char *dockId = "");
+	void showProjector(const char *name, const char *dockId = "",
+			   bool isFloating = false);
 
 private:
 	void initialize();

@@ -36,7 +36,6 @@ ProjectorDock::ProjectorDock(obs_source_t *source, int width, int height)
 	auto name = obs_source_get_name(source);
 
 	setWindowTitle(name);
-	setObjectName("BK_Projector-" + QString(name));
 	adjustSize();
 }
 

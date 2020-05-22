@@ -53,13 +53,6 @@
      <item>
       <widget class="QListWidget" name="listWidget"/>
      </item>
-     <item>
-      <widget class="QPushButton" name="previewWidget">
-       <property name="text">
-        <string>PushButton</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item>

@@ -20,7 +20,7 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #include <QWindow>
 
 ProjectorWidget::ProjectorWidget(QWidget *parent, obs_source_t *source)
-	: QWidget(parent), source(source)
+	: QWidget(parent)
 {
 	setAttribute(Qt::WA_PaintOnScreen);
 	setAttribute(Qt::WA_StaticContents);
@@ -34,14 +34,26 @@ ProjectorWidget::ProjectorWidget(QWidget *parent, obs_source_t *source)
 	connect(windowHandle(), &QWindow::screenChanged, this,
 		&ProjectorWidget::screenChanged);
 
-	if (source)
-		obs_source_inc_showing(source);
+	setSource(source);
 }
 
 ProjectorWidget::~ProjectorWidget()
 {
 	if (source)
 		obs_source_dec_showing(source);
+}
+
+void ProjectorWidget::setSource(obs_source_t *source)
+{
+	if (this->source) {
+		obs_source_dec_showing(this->source);
+		obs_source_release(this->source);
+	}
+
+	this->source = source;
+
+	if (this->source)
+		obs_source_inc_showing(this->source);
 }
 
 void ProjectorWidget::visibleChanged(bool visible)

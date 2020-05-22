@@ -28,7 +28,7 @@ BetterProjectors::BetterProjectors()
 
 BetterProjectors::~BetterProjectors() {}
 
-void BetterProjectors::showProjector(const char *name, const char *dockId)
+void BetterProjectors::showProjector(const char *name, const char *dockId, const bool isFloating)
 {
 	const auto source = obs_get_source_by_name(name);
 
@@ -56,6 +56,7 @@ void BetterProjectors::showProjector(const char *name, const char *dockId)
 	}
 
 	projector->show();
+	projector->setFloating(isFloating);
 
 	obs_frontend_add_dock(projector);
 	docks.push_back(projector); // TODO: Remove when closed
@@ -111,6 +112,7 @@ void BetterProjectors::save(obs_data_t *save_data, BetterProjectors *instance)
 		const char *sourceName = obs_source_get_name(dock->source);
 
 		obs_data_set_string(projector, "source_name", sourceName);
+		obs_data_set_bool(projector, "is_floating", dock->isFloating());
 		obs_data_set_string(projector, "dock_id",
 				    dock->objectName().toLocal8Bit().data());
 
@@ -147,8 +149,11 @@ void BetterProjectors::load(obs_data_t *save_data, BetterProjectors *instance)
 
 		const char *dockId = obs_data_get_string(projector, "dock_id");
 
+		const bool floating =
+			obs_data_get_bool(projector, "is_floating");
+		
 		obs_data_release(projector);
 
-		instance->showProjector(sourceName, dockId);
+		instance->showProjector(sourceName, dockId, floating);
 	}
 }

@@ -34,5 +34,4 @@ public:
 	ProjectorDock(obs_source_t *source, int width = 400, int height = 225);
 
 	QSize sizeHint() const override;
-	void closeEvent(QCloseEvent *event) override;
 };

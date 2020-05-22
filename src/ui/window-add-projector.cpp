@@ -2,6 +2,7 @@
 #include "window-add-projector.hpp"
 #include "../projector-dock.hpp"
 #include "../better-projectors.hpp"
+#include <QLabel>
 
 AddProjectorWindow::AddProjectorWindow(BetterProjectors *instance,
 				       QWidget *parent)
@@ -12,6 +13,15 @@ AddProjectorWindow::AddProjectorWindow(BetterProjectors *instance,
 
 	ui->setupUi(this);
 
+	
+	previewWidget = new ProjectorWidget(this, nullptr);
+
+	ui->horizontalLayout_3->addWidget(previewWidget);
+
+	previewWidget->setMinimumWidth(100);
+	previewWidget->setMinimumHeight(100);
+
+	
 	setWindowTitle("Create projector");
 
 	connect(ui->radioButtonScene, &QRadioButton::toggled, this,
@@ -22,6 +32,9 @@ AddProjectorWindow::AddProjectorWindow(BetterProjectors *instance,
 
 	connect(ui->pushButtonOk, &QPushButton::clicked, this,
 		&AddProjectorWindow::onOkClicked);
+
+	connect(ui->listWidget, &QListWidget::itemSelectionChanged, this,
+		&AddProjectorWindow::sourceSelectionChanged);
 
 	updateSourceComboBox();
 }
@@ -48,6 +61,19 @@ void AddProjectorWindow::onOkClicked(bool checked)
 	}
 
 	close();
+}
+
+void AddProjectorWindow::sourceSelectionChanged()
+{
+	if (ui->listWidget->selectedItems().size() == 1) {
+		obs_source_t *source = obs_get_source_by_name(
+			ui->listWidget->selectedItems()[0]
+				->text()
+				.toLocal8Bit()
+				.data());
+
+		previewWidget->setSource(source);
+	}
 }
 
 void AddProjectorWindow::updateSourceComboBox()

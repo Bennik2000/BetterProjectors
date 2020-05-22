@@ -25,13 +25,15 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 class ProjectorWidget : public QWidget {
 
 private:
-	obs_source_t *source;
+	obs_source_t *source = nullptr;
 	OBSDisplay display;
 
 public:
 	ProjectorWidget(QWidget *parent, obs_source_t *source);
 	~ProjectorWidget();
 
+	void setSource(obs_source_t *source);
+	
 	void resizeEvent(QResizeEvent *event) override;
 	void paintEvent(QPaintEvent *event) override;
 	QPaintEngine *paintEngine() const override;
