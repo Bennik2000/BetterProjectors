@@ -22,6 +22,10 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #include <obs.h>
 #include "projector-widget.hpp"
 
+class ProjectorDock;
+
+typedef void (*projectorDockCallback)(ProjectorDock *dock, void *parameter);
+
 class ProjectorDock : public QDockWidget {
 
 private:
@@ -30,15 +34,20 @@ private:
 	bool wasFloating;
 
 	ProjectorWidget *projectorWidget;
+	projectorDockCallback closeCallback = nullptr;
+	void *closeCallbackParameter = nullptr;
 
 public:
-	ProjectorDock(obs_source_t *source, int width = 400, int height = 225);
+	ProjectorDock(const char *source, int width = 400, int height = 225);
 
-	QSize sizeHint() const override;
 	void resizeToWidth();
 
 	void topLevelChanged(bool topLevel);
-
-	void resizeEvent(QResizeEvent *event) override;
 	obs_source_t *getSource();
+
+	void setCloseCallback(projectorDockCallback callback, void *parameter);
+
+	QSize sizeHint() const override;
+	void resizeEvent(QResizeEvent *event) override;
+	void closeEvent(QCloseEvent *event) override;
 };

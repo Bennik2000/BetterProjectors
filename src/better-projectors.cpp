@@ -19,24 +19,27 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #include "ui/window-add-projector.hpp"
 #include "QAction"
 #include <ctime>
+#include <algorithm>
 
 BetterProjectors::BetterProjectors()
 {
 	initialize();
 }
 
-BetterProjectors::~BetterProjectors() {}
+BetterProjectors::~BetterProjectors()
+{
+}
 
 void BetterProjectors::showProjector(const char *name, const char *dockId,
 				     const bool isFloating,
 				     const char *geometry)
 {
-	const auto source = obs_get_source_by_name(name);
-
 	const float width = 400;
 	const float height = width * (9.0f / 16.0f);
 
-	auto projector = new ProjectorDock(source, width, height);
+	auto projector = new ProjectorDock(name, width, height);
+
+	projector->setCloseCallback(projectorDockCloseCallback, this);
 
 	if (strcmp(dockId, "") != 0)
 		projector->setObjectName(dockId);
@@ -165,4 +168,13 @@ void BetterProjectors::load(obs_data_t *save_data, BetterProjectors *instance)
 
 		instance->showProjector(sourceName, dockId, floating, geometry);
 	}
+}
+
+void BetterProjectors::projectorDockCloseCallback(ProjectorDock *dock,
+						  void *parameter)
+{
+	auto instance = reinterpret_cast<BetterProjectors *>(parameter);
+
+	instance->docks.erase(std::find(instance->docks.begin(),
+					instance->docks.end(), dock));
 }

@@ -20,7 +20,7 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #include <QWindow>
 #include <QDockWidget>
 
-ProjectorWidget::ProjectorWidget(QWidget *parent, obs_source_t *source)
+ProjectorWidget::ProjectorWidget(QWidget *parent, const char *source)
 	: QWidget(parent)
 {
 	setAttribute(Qt::WA_PaintOnScreen);
@@ -40,21 +40,27 @@ ProjectorWidget::ProjectorWidget(QWidget *parent, obs_source_t *source)
 
 ProjectorWidget::~ProjectorWidget()
 {
-	if (sourceRef)
-		obs_source_dec_showing(sourceRef);
+	obs_display_remove_draw_callback(display, renderCallbackFunc, this);
+	// TODO: Fix memory leak
+	if (this->sourceRef) {
+		obs_source_dec_showing(this->sourceRef);
+		//obs_source_release(this->sourceRef);
+	}
 }
 
-void ProjectorWidget::setSource(obs_source_t *source)
+void ProjectorWidget::setSource(const char *source)
 {
 	if (this->sourceRef) {
 		obs_source_dec_showing(this->sourceRef);
-		obs_source_release(this->sourceRef);
+		//obs_source_release(this->sourceRef);
 	}
 
-	this->sourceRef = source;
+	if (source) {
+		this->sourceRef = obs_get_source_by_name(source);
 
-	if (this->sourceRef)
-		obs_source_inc_showing(this->sourceRef);
+		if (this->sourceRef)
+			obs_source_inc_showing(this->sourceRef);
+	}
 }
 
 obs_source_t *ProjectorWidget::source()
@@ -97,12 +103,11 @@ void ProjectorWidget::createDisplay()
 	// TODO: Destroy display??
 	display = obs_display_create(&info, 0);
 
-	const auto renderCallbackLambda = [](void *data, uint32_t cx,
-					     uint32_t cy) {
+	renderCallbackFunc = [](void *data, uint32_t cx, uint32_t cy) {
 		static_cast<ProjectorWidget *>(data)->renderCallback(cx, cy);
 	};
 
-	obs_display_add_draw_callback(display, renderCallbackLambda, this);
+	obs_display_add_draw_callback(display, renderCallbackFunc, this);
 	obs_display_set_background_color(display, 0x000000);
 }
 

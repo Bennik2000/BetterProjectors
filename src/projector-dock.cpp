@@ -21,7 +21,7 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #include <QGridLayout>
 #include <QResizeEvent>
 
-ProjectorDock::ProjectorDock(obs_source_t *source, int width, int height)
+ProjectorDock::ProjectorDock(const char *source, int width, int height)
 	: QDockWidget("Projector",
 		      static_cast<QWidget *>(obs_frontend_get_main_window())),
 	  width(width),
@@ -36,11 +36,9 @@ ProjectorDock::ProjectorDock(obs_source_t *source, int width, int height)
 	connect(this, &QDockWidget::topLevelChanged, this,
 		&ProjectorDock::topLevelChanged);
 
-	auto name = obs_source_get_name(source);
-
 	wasFloating = isFloating();
 
-	setWindowTitle(name);
+	setWindowTitle(source);
 	adjustSize();
 }
 
@@ -75,7 +73,22 @@ void ProjectorDock::resizeEvent(QResizeEvent *event)
 	height = event->size().height();
 }
 
+void ProjectorDock::closeEvent(QCloseEvent *event)
+{
+	if (closeCallback)
+		closeCallback(this, closeCallbackParameter);
+
+	projectorWidget->setSource(nullptr);
+}
+
 obs_source_t *ProjectorDock::getSource()
 {
 	return projectorWidget->source();
+}
+
+void ProjectorDock::setCloseCallback(projectorDockCallback callback,
+				     void *parameter)
+{
+	closeCallback = callback;
+	closeCallbackParameter = parameter;
 }

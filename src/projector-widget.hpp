@@ -21,18 +21,21 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #include <QScreen>
 #include <obs.h>
 #include <obs.hpp>
+#include <mutex>
 
 class ProjectorWidget : public QWidget {
 
 private:
-	obs_source_t *sourceRef = nullptr;
+	OBSSource sourceRef;
 	OBSDisplay display;
 
+	void (*renderCallbackFunc)(void *param, uint32_t cx, uint32_t cy);
+
 public:
-	ProjectorWidget(QWidget *parent, obs_source_t *source);
+	ProjectorWidget(QWidget *parent, const char *source);
 	~ProjectorWidget();
 
-	void setSource(obs_source_t *source);
+	void setSource(const char *source);
 	obs_source_t *source();
 
 	void resizeEvent(QResizeEvent *event) override;

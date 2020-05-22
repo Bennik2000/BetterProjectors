@@ -33,7 +33,7 @@ AddProjectorWindow::AddProjectorWindow(BetterProjectors *instance,
 
 	previewWidget = new ProjectorWidget(this, nullptr);
 
-	ui->horizontalLayout_3->addWidget(previewWidget);
+	ui->previewLayout->addWidget(previewWidget);
 
 	previewWidget->setMinimumWidth(100);
 	previewWidget->setMinimumHeight(100);
@@ -82,13 +82,10 @@ void AddProjectorWindow::onOkClicked(bool checked)
 void AddProjectorWindow::sourceSelectionChanged()
 {
 	if (ui->listWidget->selectedItems().size() == 1) {
-		obs_source_t *source = obs_get_source_by_name(
-			ui->listWidget->selectedItems()[0]
-				->text()
-				.toLocal8Bit()
-				.data());
-
-		previewWidget->setSource(source);
+		previewWidget->setSource(ui->listWidget->selectedItems()[0]
+						 ->text()
+						 .toLocal8Bit()
+						 .data());
 	}
 }
 

@@ -40,4 +40,6 @@ private:
 
 	static void save(obs_data_t *save_data, BetterProjectors *instance);
 	static void load(obs_data_t *save_data, BetterProjectors *instance);
+
+	static void projectorDockCloseCallback(ProjectorDock *dock, void *parameter);
 };
