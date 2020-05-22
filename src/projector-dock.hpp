@@ -20,18 +20,25 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #include <QDockWidget>
 #include <obs-frontend-api.h>
 #include <obs.h>
+#include "projector-widget.hpp"
 
 class ProjectorDock : public QDockWidget {
 
 private:
 	int width;
 	int height;
+	bool wasFloating;
 
-public:
-	obs_source_t *source;
+	ProjectorWidget *projectorWidget;
 
 public:
 	ProjectorDock(obs_source_t *source, int width = 400, int height = 225);
 
 	QSize sizeHint() const override;
+	void resizeToWidth();
+
+	void topLevelChanged(bool topLevel);
+
+	void resizeEvent(QResizeEvent *event) override;
+	obs_source_t *getSource();
 };

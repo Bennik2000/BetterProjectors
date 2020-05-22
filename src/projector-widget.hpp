@@ -25,7 +25,7 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 class ProjectorWidget : public QWidget {
 
 private:
-	obs_source_t *source = nullptr;
+	obs_source_t *sourceRef = nullptr;
 	OBSDisplay display;
 
 public:
@@ -33,7 +33,8 @@ public:
 	~ProjectorWidget();
 
 	void setSource(obs_source_t *source);
-	
+	obs_source_t *source();
+
 	void resizeEvent(QResizeEvent *event) override;
 	void paintEvent(QPaintEvent *event) override;
 	QPaintEngine *paintEngine() const override;
@@ -47,7 +48,7 @@ private:
 	void updateSize();
 
 	void renderCallback(uint32_t cx, uint32_t cy);
-	
+
 	static void qTToGSWindow(WId windowId, gs_window &gsWindow);
 	static QSize getWidgetPixelSize(QWidget *widget);
 };

@@ -35,7 +35,7 @@ bool obs_module_load(void)
 	pluginInstance = new BetterProjectors();
 
 	blog(LOG_INFO, "Better projectors loaded");
-	
+
 	return true;
 }
 

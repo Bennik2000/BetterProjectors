@@ -18,6 +18,7 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 
 #include "projector-widget.hpp"
 #include <QWindow>
+#include <QDockWidget>
 
 ProjectorWidget::ProjectorWidget(QWidget *parent, obs_source_t *source)
 	: QWidget(parent)
@@ -39,22 +40,27 @@ ProjectorWidget::ProjectorWidget(QWidget *parent, obs_source_t *source)
 
 ProjectorWidget::~ProjectorWidget()
 {
-	if (source)
-		obs_source_dec_showing(source);
+	if (sourceRef)
+		obs_source_dec_showing(sourceRef);
 }
 
 void ProjectorWidget::setSource(obs_source_t *source)
 {
-	if (this->source) {
-		obs_source_dec_showing(this->source);
-		obs_source_release(this->source);
+	if (this->sourceRef) {
+		obs_source_dec_showing(this->sourceRef);
+		obs_source_release(this->sourceRef);
 	}
 
-	this->source = source;
+	this->sourceRef = source;
 
-	if (this->source)
-		obs_source_inc_showing(this->source);
+	if (this->sourceRef)
+		obs_source_inc_showing(this->sourceRef);
 }
+
+obs_source_t *ProjectorWidget::source()
+{
+	return sourceRef;
+};
 
 void ProjectorWidget::visibleChanged(bool visible)
 {
@@ -111,11 +117,11 @@ void ProjectorWidget::updateSize()
 
 void ProjectorWidget::renderCallback(uint32_t cx, uint32_t cy)
 {
-	if (!source || !display)
+	if (!sourceRef || !display)
 		return;
 
-	const uint32_t sourceHeight = obs_source_get_height(source);
-	const uint32_t sourceWidth = obs_source_get_width(source);
+	const uint32_t sourceHeight = obs_source_get_height(sourceRef);
+	const uint32_t sourceWidth = obs_source_get_width(sourceRef);
 
 	const float scaleX = static_cast<float>(cx) / sourceWidth;
 	const float scaleY = static_cast<float>(cy) / sourceHeight;
@@ -140,7 +146,7 @@ void ProjectorWidget::renderCallback(uint32_t cx, uint32_t cy)
 	gs_set_viewport(0, 0, size.width(), size.height());
 	gs_ortho(0, size.width(), 0, size.height(), -100.0f, 100.0f);
 
-	obs_source_video_render(source);
+	obs_source_video_render(sourceRef);
 
 	gs_viewport_pop();
 	gs_projection_pop();

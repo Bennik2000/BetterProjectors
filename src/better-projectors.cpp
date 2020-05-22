@@ -15,7 +15,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program. If not, see <https://www.gnu.org/licenses/>
 */
-
 #include "better-projectors.hpp"
 #include "ui/window-add-projector.hpp"
 #include "QAction"
@@ -28,7 +27,9 @@ BetterProjectors::BetterProjectors()
 
 BetterProjectors::~BetterProjectors() {}
 
-void BetterProjectors::showProjector(const char *name, const char *dockId, const bool isFloating)
+void BetterProjectors::showProjector(const char *name, const char *dockId,
+				     const bool isFloating,
+				     const char *geometry)
 {
 	const auto source = obs_get_source_by_name(name);
 
@@ -42,7 +43,7 @@ void BetterProjectors::showProjector(const char *name, const char *dockId, const
 	else {
 		projector->setFloating(true);
 
-		auto t = std::time(0);
+		auto t = std::time(nullptr);
 		std::tm *now = std::localtime(&t);
 
 		std::string str = std::to_string(now->tm_year) +
@@ -57,6 +58,8 @@ void BetterProjectors::showProjector(const char *name, const char *dockId, const
 
 	projector->show();
 	projector->setFloating(isFloating);
+	projector->restoreGeometry(
+		QByteArray::fromBase64(QByteArray(geometry)));
 
 	obs_frontend_add_dock(projector);
 	docks.push_back(projector); // TODO: Remove when closed
@@ -109,12 +112,15 @@ void BetterProjectors::save(obs_data_t *save_data, BetterProjectors *instance)
 	for (const auto &dock : instance->docks) {
 		auto projector = obs_data_create();
 
-		const char *sourceName = obs_source_get_name(dock->source);
+		const char *sourceName = obs_source_get_name(dock->getSource());
 
 		obs_data_set_string(projector, "source_name", sourceName);
 		obs_data_set_bool(projector, "is_floating", dock->isFloating());
 		obs_data_set_string(projector, "dock_id",
 				    dock->objectName().toLocal8Bit().data());
+
+		obs_data_set_string(projector, "geometry",
+				    dock->saveGeometry().toBase64().data());
 
 		obs_data_array_push_back(projectorsData, projector);
 
@@ -151,9 +157,12 @@ void BetterProjectors::load(obs_data_t *save_data, BetterProjectors *instance)
 
 		const bool floating =
 			obs_data_get_bool(projector, "is_floating");
-		
+
+		const char *geometry =
+			obs_data_get_string(projector, "geometry");
+
 		obs_data_release(projector);
 
-		instance->showProjector(sourceName, dockId, floating);
+		instance->showProjector(sourceName, dockId, floating, geometry);
 	}
 }
