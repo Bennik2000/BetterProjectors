@@ -40,10 +40,10 @@ AddProjectorWindow::AddProjectorWindow(BetterProjectors *instance,
 	setWindowTitle("Create projector");
 
 	connect(ui->radioButtonScene, &QRadioButton::toggled, this,
-		&AddProjectorWindow::radioButtonSceneToggled);
+		&AddProjectorWindow::radioButtonToggled);
 
 	connect(ui->radioButtonSource, &QRadioButton::toggled, this,
-		&AddProjectorWindow::radioButtonSourceToggled);
+		&AddProjectorWindow::radioButtonToggled);
 
 	connect(ui->pushButtonOk, &QPushButton::clicked, this,
 		&AddProjectorWindow::onOkClicked);
@@ -51,19 +51,16 @@ AddProjectorWindow::AddProjectorWindow(BetterProjectors *instance,
 	connect(ui->listWidget, &QListWidget::itemSelectionChanged, this,
 		&AddProjectorWindow::sourceSelectionChanged);
 
-	updateSourceComboBox();
+	updateSourceListWidget();
 }
 
-void AddProjectorWindow::radioButtonSceneToggled(bool checked)
+void AddProjectorWindow::radioButtonToggled(bool checked)
 {
-	if (checked)
-		updateSourceComboBox();
-}
+	if (checked) {
+		updateSourceListWidget();
 
-void AddProjectorWindow::radioButtonSourceToggled(bool checked)
-{
-	if (checked)
-		updateSourceComboBox();
+		previewWidget->setSource(nullptr);
+	}
 }
 
 void AddProjectorWindow::onOkClicked(bool checked)
@@ -88,7 +85,7 @@ void AddProjectorWindow::sourceSelectionChanged()
 	}
 }
 
-void AddProjectorWindow::updateSourceComboBox()
+void AddProjectorWindow::updateSourceListWidget()
 {
 	ui->listWidget->clear();
 

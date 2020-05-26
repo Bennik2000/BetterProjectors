@@ -53,12 +53,14 @@ void ProjectorWidget::setSource(const char *source)
 {
 	if (this->sourceRef) {
 		obs_source_dec_showing(this->sourceRef);
+
+		if (source)
+			obs_source_release(this->sourceRef);
 	}
 
-	if (source) {
-		if (this->sourceRef)
-			obs_source_release(this->sourceRef);
+	this->sourceRef = nullptr;
 
+	if (source) {
 		this->sourceRef = obs_get_source_by_name(source);
 
 		if (this->sourceRef)

@@ -35,11 +35,10 @@ public:
 	std::unique_ptr<Ui::AddProjectorWindow> ui;
 
 private slots:
-	void radioButtonSceneToggled(bool checked);
-	void radioButtonSourceToggled(bool checked);
+	void radioButtonToggled(bool checked);
 	void onOkClicked(bool checked);
 	void sourceSelectionChanged();
 
 private:
-	void updateSourceComboBox();
+	void updateSourceListWidget();
 };
