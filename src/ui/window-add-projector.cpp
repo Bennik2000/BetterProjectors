@@ -20,7 +20,6 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #include "window-add-projector.hpp"
 #include "../projector-dock.hpp"
 #include "../better-projectors.hpp"
-#include <QLabel>
 
 AddProjectorWindow::AddProjectorWindow(BetterProjectors *instance,
 				       QWidget *parent)
@@ -35,8 +34,8 @@ AddProjectorWindow::AddProjectorWindow(BetterProjectors *instance,
 
 	ui->previewLayout->addWidget(previewWidget);
 
-	previewWidget->setMinimumWidth(100);
-	previewWidget->setMinimumHeight(100);
+	previewWidget->setMinimumWidth(400);
+	previewWidget->setMinimumHeight(400 * (9.0f / 16.0f));
 
 	setWindowTitle("Create projector");
 

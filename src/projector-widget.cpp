@@ -40,11 +40,12 @@ ProjectorWidget::ProjectorWidget(QWidget *parent, const char *source)
 
 ProjectorWidget::~ProjectorWidget()
 {
+	// TODO: There seems to be a memory leak somewhere
+
 	obs_display_remove_draw_callback(display, renderCallbackFunc, this);
-	// TODO: Fix memory leak
+
 	if (this->sourceRef) {
 		obs_source_dec_showing(this->sourceRef);
-		//obs_source_release(this->sourceRef);
 	}
 }
 
@@ -52,10 +53,12 @@ void ProjectorWidget::setSource(const char *source)
 {
 	if (this->sourceRef) {
 		obs_source_dec_showing(this->sourceRef);
-		//obs_source_release(this->sourceRef);
 	}
 
 	if (source) {
+		if (this->sourceRef)
+			obs_source_release(this->sourceRef);
+
 		this->sourceRef = obs_get_source_by_name(source);
 
 		if (this->sourceRef)
@@ -100,7 +103,6 @@ void ProjectorWidget::createDisplay()
 
 	qTToGSWindow(winId(), info.window);
 
-	// TODO: Destroy display??
 	display = obs_display_create(&info, 0);
 
 	renderCallbackFunc = [](void *data, uint32_t cx, uint32_t cy) {
@@ -138,24 +140,23 @@ void ProjectorWidget::renderCallback(uint32_t cx, uint32_t cy)
 	const float heightGap = cy - scaledSourceHeight;
 	const float widthGap = cx - scaledSourceWidth;
 
-	const QSize size = getWidgetPixelSize(this);
+	gs_viewport_push();
+	gs_set_viewport(widthGap / 2, heightGap / 2, scaledSourceWidth,
+			scaledSourceHeight);
 
 	gs_projection_push();
-	gs_viewport_push();
+	gs_ortho(0, scaledSourceWidth, 0, scaledSourceHeight, -100.0f, 100.0f);
+
 	gs_matrix_push();
 	gs_matrix_identity();
-
-	gs_matrix_translate3f(widthGap / 2, heightGap / 2, 1.0f);
 	gs_matrix_scale3f(scale, scale, 1.0f);
-
-	gs_set_viewport(0, 0, size.width(), size.height());
-	gs_ortho(0, size.width(), 0, size.height(), -100.0f, 100.0f);
 
 	obs_source_video_render(sourceRef);
 
-	gs_viewport_pop();
-	gs_projection_pop();
 	gs_matrix_pop();
+
+	gs_projection_pop();
+	gs_viewport_pop();
 }
 
 void ProjectorWidget::qTToGSWindow(WId windowId, gs_window &gsWindow)
