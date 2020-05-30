@@ -1,14 +1,12 @@
 # Better Projectors for OBS Studio
 
-## Introduction
+This plugin adds dockable projectors to OBS Studio.
 
-This plugin adds dockable projectors to OBS Studio
-
-
+If you find any bugs or if you have any ideas feel free to open a new issue on the issue page.
 
 ## Screenshots
 
-You can add a projector using the menu bar by clicking on the "Better projectors" entry. 
+You can add a projector using the menu bar by clicking on the "Better projectors" entry
 
 ![](./img/Screenshot_1.png)
 
