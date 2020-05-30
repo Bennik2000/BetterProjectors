@@ -7,24 +7,20 @@ endif()
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
 
-#set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
 if (NOT Qt5Widgets_FOUND OR NOT Qt5Core_FOUND)
     message(FATAL_ERROR "Failed to find Qt5")
 endif ()
 
-
 set(better-projectors_UI
         src/ui/window-add-projector.ui)
 
 
 qt5_wrap_ui(better-projectors_UI_HEADERS ${better-projectors_UI})
-#qt5_add_resources(...)
-
 
 set(better-projectors_SOURCES 
-	src/plugin-main.cpp 
+	src/plugin-main.cpp
 	src/projector-dock.cpp
 	src/projector-dock.hpp
 	src/projector-widget.cpp
@@ -39,8 +35,6 @@ add_library(better-projectors
 	MODULE 
 	${better-projectors_SOURCES})
 	
-MESSAGE(${better-projectors_UI_HEADERS} " <-----")
-
 target_include_directories(better-projectors 
 	PRIVATE 
 	"../../UI/obs-frontend-api"

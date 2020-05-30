@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License along
 with this program. If not, see <https://www.gnu.org/licenses/>
 */
 #pragma once
+#include <QApplication>
+#include <QAction>
 #include <vector>
 #include "projector-dock.hpp"
 
@@ -41,5 +43,6 @@ private:
 	static void save(obs_data_t *save_data, BetterProjectors *instance);
 	static void load(obs_data_t *save_data, BetterProjectors *instance);
 
-	static void projectorDockCloseCallback(ProjectorDock *dock, void *parameter);
+	static void projectorDockCloseCallback(ProjectorDock *dock,
+					       void *parameter);
 };

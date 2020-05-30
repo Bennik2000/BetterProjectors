@@ -17,18 +17,16 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 */
 #include "better-projectors.hpp"
 #include "ui/window-add-projector.hpp"
+#include "better-projectors.hpp"
 #include "QAction"
 #include <ctime>
-#include <algorithm>
 
 BetterProjectors::BetterProjectors()
 {
 	initialize();
 }
 
-BetterProjectors::~BetterProjectors()
-{
-}
+BetterProjectors::~BetterProjectors() {}
 
 void BetterProjectors::showProjector(const char *name, const char *dockId,
 				     const bool isFloating,
