@@ -18,14 +18,18 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 
 #include "projector-dock.hpp"
 #include "projector-widget.hpp"
+#include "platform.hpp"
 #include <QGridLayout>
 #include <QResizeEvent>
+#include <QMenuBar>
 
-ProjectorDock::ProjectorDock(const char *source, int width, int height)
+ProjectorDock::ProjectorDock(const char *source, int width, int height,
+			     bool isAlwaysOnTop)
 	: QDockWidget("Projector",
 		      static_cast<QWidget *>(obs_frontend_get_main_window())),
 	  width(width),
-	  height(height)
+	  height(height),
+	  isAlwaysOnTop(isAlwaysOnTop)
 {
 	setFeatures(QDockWidget::AllDockWidgetFeatures);
 	setWindowFlags(windowFlags() & Qt::WindowMinMaxButtonsHint);
@@ -62,6 +66,7 @@ void ProjectorDock::topLevelChanged(bool topLevel)
 {
 	if (!wasFloating && isFloating()) {
 		resizeToWidth();
+		SetAlwaysOnTop(this, isAlwaysOnTop);
 	}
 
 	wasFloating = isFloating();
@@ -81,9 +86,51 @@ void ProjectorDock::closeEvent(QCloseEvent *event)
 	projectorWidget->setSource(nullptr);
 }
 
-obs_source_t *ProjectorDock::getSource()
+void ProjectorDock::mousePressEvent(QMouseEvent *event)
+{
+	QDockWidget::mousePressEvent(event);
+
+	if (event->button() == Qt::RightButton) {
+
+		QMenu popup(this);
+
+		if (isFloating()) {
+			QAction *alwaysOnTopButton =
+				new QAction("AlwaysOnTop", this);
+
+			alwaysOnTopButton->setCheckable(true);
+			alwaysOnTopButton->setChecked(isAlwaysOnTop);
+
+			connect(alwaysOnTopButton, &QAction::toggled, this,
+				&ProjectorDock::AlwaysOnTopToggled);
+
+			popup.addAction(alwaysOnTopButton);
+		}
+
+		popup.exec(QCursor::pos());
+	}
+}
+
+void ProjectorDock::setVisible(bool visible)
+{
+	QDockWidget::setVisible(visible);
+	SetAlwaysOnTop(this, isAlwaysOnTop);
+}
+
+void ProjectorDock::AlwaysOnTopToggled(bool alwaysOnTop)
+{
+	this->isAlwaysOnTop = alwaysOnTop;
+	SetAlwaysOnTop(this, isAlwaysOnTop);
+}
+
+obs_source_t *ProjectorDock::getSource() const
 {
 	return projectorWidget->source();
+}
+
+bool ProjectorDock::getIsAlwaysOnTop() const
+{
+	return isAlwaysOnTop;
 }
 
 void ProjectorDock::setCloseCallback(projectorDockCallback callback,

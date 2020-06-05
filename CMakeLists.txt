@@ -27,6 +27,8 @@ set(better-projectors_SOURCES
 	src/projector-widget.hpp
 	src/better-projectors.cpp
 	src/better-projectors.hpp
+	src/platform.hpp
+	src/platform-windows.cpp
 	src/ui/window-add-projector.cpp
 	src/ui/window-add-projector.hpp
 	${better-projectors_UI_HEADERS})

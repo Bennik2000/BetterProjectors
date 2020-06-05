@@ -30,12 +30,13 @@ BetterProjectors::~BetterProjectors() {}
 
 void BetterProjectors::showProjector(const char *name, const char *dockId,
 				     const bool isFloating,
-				     const char *geometry)
+				     const char *geometry,
+				     const bool isAlwaysOnTop)
 {
 	const float width = 400;
 	const float height = width * (9.0f / 16.0f);
 
-	auto projector = new ProjectorDock(name, width, height);
+	auto projector = new ProjectorDock(name, width, height, isAlwaysOnTop);
 
 	projector->setCloseCallback(projectorDockCloseCallback, this);
 
@@ -117,6 +118,8 @@ void BetterProjectors::save(obs_data_t *save_data, BetterProjectors *instance)
 
 		obs_data_set_string(projector, "source_name", sourceName);
 		obs_data_set_bool(projector, "is_floating", dock->isFloating());
+		obs_data_set_bool(projector, "is_always_on_top",
+				  dock->getIsAlwaysOnTop());
 		obs_data_set_string(projector, "dock_id",
 				    dock->objectName().toLocal8Bit().data());
 
@@ -159,12 +162,16 @@ void BetterProjectors::load(obs_data_t *save_data, BetterProjectors *instance)
 		const bool floating =
 			obs_data_get_bool(projector, "is_floating");
 
+		const bool isAlwaysOnTop =
+			obs_data_get_bool(projector, "is_always_on_top");
+
 		const char *geometry =
 			obs_data_get_string(projector, "geometry");
 
 		obs_data_release(projector);
 
-		instance->showProjector(sourceName, dockId, floating, geometry);
+		instance->showProjector(sourceName, dockId, floating, geometry,
+					isAlwaysOnTop);
 	}
 }
 

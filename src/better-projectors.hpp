@@ -31,7 +31,8 @@ public:
 	~BetterProjectors();
 
 	void showProjector(const char *name, const char *dockId = "",
-			   bool isFloating = false, const char *geometry = "");
+			   bool isFloating = false, const char *geometry = "",
+			   bool isAlwaysOnTop = false);
 
 private:
 	void initialize();

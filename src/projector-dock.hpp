@@ -32,22 +32,30 @@ private:
 	int width;
 	int height;
 	bool wasFloating;
+	bool isAlwaysOnTop;
 
 	ProjectorWidget *projectorWidget;
 	projectorDockCallback closeCallback = nullptr;
 	void *closeCallbackParameter = nullptr;
 
 public:
-	ProjectorDock(const char *source, int width = 400, int height = 225);
+	ProjectorDock(const char *source, int width = 400, int height = 225,
+		      bool isAlwaysOnTop = false);
 
 	void resizeToWidth();
 
 	void topLevelChanged(bool topLevel);
-	obs_source_t *getSource();
+	obs_source_t *getSource() const;
+	bool getIsAlwaysOnTop() const;
 
 	void setCloseCallback(projectorDockCallback callback, void *parameter);
 
 	QSize sizeHint() const override;
 	void resizeEvent(QResizeEvent *event) override;
 	void closeEvent(QCloseEvent *event) override;
+	void mousePressEvent(QMouseEvent *event) override;
+	void setVisible(bool visible) override;
+
+private slots:
+	void AlwaysOnTopToggled(bool alwaysOnTop);
 };
